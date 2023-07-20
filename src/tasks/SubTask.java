@@ -1,47 +1,27 @@
 package tasks;
 
-import java.util.ArrayList;
-
 public class SubTask extends Task {
-    Epic epic;
+   protected int epicId;
 
-    public SubTask(String name, String description) {
+    public SubTask(String name, String description,int epicId) {
         super(name, description);
+        this.epicId=epicId;
     }
 
-    public Epic getEpic() {
-        return epic;
+    public int getEpicId() {
+        return epicId;
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        super.setStatus(status);
     }
 
     @Override
     public String toString() {
-        String EpicName = null;
-        if (!(epic == null)) {
-            EpicName = epic.getName();
-        }
-        return "Epic name = " + EpicName + ",\n SubTask:\n(Name = " + getName() + ",\n Description = "
+        return "Epic id = " + getEpicId() + ",\n SubTask:\n(Name = " + getName() + ",\n Description = "
                 + getDescription() + ",\n Id = " + getId() + ",\n Status = " + getStatus() + ")\n";
 
-    }
-
-    protected void setEpicOnes(Epic epic) {
-        this.epic = epic;
-    }
-
-    public void setEpic(Epic epic) {
-        if(epic==null){
-            return;
-        }
-        this.epic = epic;
-        epic.addSubTaskOnes(this);
-    }
-
-    @Override
-    public void setStatus(String status) {
-        super.setStatus(status);
-        if (!(epic == null)) {
-            epic.updateStatus();
-        }
     }
 }
 

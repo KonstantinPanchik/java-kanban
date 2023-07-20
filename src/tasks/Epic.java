@@ -1,57 +1,41 @@
 package tasks;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    HashMap<Integer, SubTask> subTasksInEpic;
+    ArrayList<SubTask> subTasksInEpic;
 
     public Epic(String name, String description) {
         super(name, description);
-        subTasksInEpic = new HashMap<>();
+        subTasksInEpic = new ArrayList<>();
     }
 
     @Override
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
+
         System.out.println("You can not change Epic's status by yourself");
     }
 
     public void updateStatus() {
-        String status = "NEW";
+        Status status = Status.NEW;
         if (!subTasksInEpic.isEmpty()) {
-            int i = 0;
-            String statusArray[] = new String[subTasksInEpic.size()];
-            for (SubTask subTask : subTasksInEpic.values()) {
-                statusArray[i++] = subTask.status;
-            }
-            status = statusArray[0];
-            for (int j = 1; j < statusArray.length; j++) {
-                if (!status.equals(statusArray[j])) {
-                    status = "IN_PROGRESS";
-                    break;
+            status = subTasksInEpic.get(0).getStatus();
+            for (int i = 1; i < subTasksInEpic.size(); i++) {
+                if (status != subTasksInEpic.get(i).getStatus()) {
+                    this.status = Status.IN_PROGRESS;
+                    return;
                 }
             }
         }
         this.status = status;
     }
-
-    public HashMap<Integer, SubTask> getSubTasksInEpic() {
+    public ArrayList <SubTask> getSubTasksInEpic() {
         return subTasksInEpic;
     }
 
-    protected void addSubTaskOnes(SubTask subTask) {
-        subTasksInEpic.put(subTask.getId(), subTask);
-        updateStatus();
-    }
-
-    public void addSubTask(SubTask... subTasks) {
-        for (SubTask subTask : subTasks) {
-            if (subTask == null) {
-                continue;
-            }
-            subTasksInEpic.put(subTask.getId(), subTask);
-            subTask.setEpicOnes(this);
-        }
+    public void addSubTaskInEpic(SubTask subTask) {
+        subTasksInEpic.add(subTask);
         updateStatus();
     }
 
@@ -60,7 +44,7 @@ public class Epic extends Task {
 
         String result = "Epic:\n(Name = " + getName() + ",\n Description = " + getDescription()
                 + ",\n Id = " + getId() + ",\n Status = " + getStatus() + ")\n Subtasks in this Epic:\n{\n";
-        for (SubTask subTask : subTasksInEpic.values()) {
+        for (SubTask subTask : subTasksInEpic) {
             result = result + subTask.toString();
 
         }

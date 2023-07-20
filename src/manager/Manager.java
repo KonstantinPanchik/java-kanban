@@ -9,7 +9,7 @@ public class Manager {
     HashMap<Integer, Task> tasks;
     HashMap<Integer, SubTask> subTasks;
     HashMap<Integer, Epic> epics;
-    static int createdId;
+    private static int createdId;
 
     public Manager() {
         this.tasks = new HashMap<>();
@@ -17,35 +17,66 @@ public class Manager {
         this.epics = new HashMap<>();
     }
 
-    public static int getId() {
+    private static int createId() {
         return ++createdId;
     }
 
-    public void setTasks(Task... tasks) {
-        for (Task task : tasks) {
-            if(task==null){
-                continue;
-            }
-            if (task.getClass() == Task.class) {
-                this.tasks.put(task.getId(), task);
-            }
-            if (task.getClass() == Epic.class) { // при сохраненение эпика происходит сохранение и субтасков
-                Epic epic = (Epic) task;
-                for (SubTask subTask : (epic.getSubTasksInEpic().values())) {
-                    subTasks.put(subTask.getId(), subTask);
-                }
-                epics.put(epic.getId(), epic);
-            }
-            if (task.getClass() == SubTask.class) {
-                // если у сабТаска нет эпика сохраниться сабТаск без эпика,если есть сохранится и эпик
-                SubTask subTask = (SubTask) task;
-                if (!(subTask.getEpic() == null)) {
-                    setTasks(subTask.getEpic());
-                } else {
-                    subTasks.put(subTask.getId(), subTask);
-                }
-            }
+    public void addTask(Task task) {
+        if (task == null) {
+            return;
         }
+        if (task.getClass() != Task.class) {
+            return;
+        }
+        if (tasks.containsValue(task)) {
+            System.out.println("You can't add " + task.getName() + " Task. The Task is added already");
+            return;
+        }
+        task.setId(createId());
+        tasks.put(task.getId(), task);
+        System.out.println("Task " + task.getName() + " has been added");
+    }
+
+    public void addEpic(Epic epic) {
+        if (epic == null) {
+            return;
+        }
+        if (epic.getClass() != Epic.class) {
+            return;
+        }
+        if (tasks.containsValue(epic)) {
+            System.out.println("You can't add " + epic.getName() + " Epic. The Epic is added already");
+            return;
+        }
+        epic.setId(createId());
+        epics.put(epic.getId(), epic);
+        System.out.println("Epic " + epic.getName() + " has been added");
+    }
+
+    public void addSubTask(SubTask subTask) {
+        if (subTask == null) {
+            return;
+        }
+        if (subTask.getClass() != SubTask.class) {
+            return;
+        }
+        if (tasks.containsValue(subTask)) {
+            System.out.println("You can't add " + subTask.getName() + " SubTask. The SubTask is added already");
+            return;
+        }
+        Epic epic;
+        if (epics.containsKey(subTask.getEpicId())) {
+            epic = epics.get(subTask.getEpicId());
+            epic.addSubTaskInEpic(subTask);
+        } else {
+            System.out.println("There is not Epic with id " + subTask.getEpicId());
+            System.out.println("SubTask " + subTask.getName() + " has not been added");
+            return;
+        }
+        subTask.setId(createId());
+        subTasks.put(subTask.getId(), subTask);
+        System.out.println("SubTask " + subTask.getName() + " has been added");
+
     }
 
     public ArrayList<Task> getAllUsualTasks() {
@@ -99,20 +130,19 @@ public class Manager {
         }
         if (epics.containsKey(id)) {  // при удаление эпика все его субТаски также удаляются
             Epic epic = epics.get(id);
-            for (Integer key : epic.getSubTasksInEpic().keySet()) {
-                subTasks.remove(key);
-
+            for (SubTask subTask : epic.getSubTasksInEpic()) {
+                subTasks.remove(subTask.getId());
             }
+            epic.getSubTasksInEpic().clear();
             epics.remove(id);
             return;
         }
         if (subTasks.containsKey(id)) {
-            for (Epic epic : epics.values()) {
-                epic.getSubTasksInEpic().remove(id);
-                epic.updateStatus();
-            }
+            SubTask subTask = subTasks.get(id);
+            Epic epic = epics.get(subTask.getEpicId());
+            epic.getSubTasksInEpic().remove(subTask);
+            epic.updateStatus();
             subTasks.remove(id);
-
         }
     }
 
@@ -123,25 +153,43 @@ public class Manager {
     }
 
     public ArrayList<SubTask> getSubTasksOfEpic(Epic epic) {
-        if(epic==null){
-            return new ArrayList<>();
-        }
-        ArrayList<SubTask> listOfSubTask = new ArrayList<>();
-        for (SubTask task : epic.getSubTasksInEpic().values()) {
-            listOfSubTask.add(task);
-        }
-        return listOfSubTask;
+        return epic.getSubTasksInEpic();
     }
 
+
     public void updateTask(Task task) {
-        if(task==null){
+        if (task == null) {
             return;
         }
-        if (tasks.containsKey(task.getId())
-                || subTasks.containsKey(task.getId())
-                || epics.containsKey(task.getId())) {
-            setTasks(task);
+        if (task.getClass() != Task.class) {
+            System.out.println("You must use Task as parameter");
+            return;
         }
+        tasks.put(task.getId(), task);
+    }
+
+    public void updateEpic(Epic epic) {
+        if (epic == null) {
+            return;
+        }
+        if (epic.getClass() != Epic.class) {
+            System.out.println("You must use Epic as parameter");
+            return;
+        }
+        epic.updateStatus();
+        epics.put(epic.getId(), epic);
+    }
+
+    public void updateSubTask(SubTask subTask) {
+        if (subTask == null) {
+            return;
+        }
+        if (subTask.getClass() != SubTask.class) {
+            System.out.println("You must use SubTask as parameter");
+            return;
+        }
+        epics.get(subTask.getEpicId()).updateStatus();
+        subTasks.put(subTask.getId(), subTask);
     }
 
 }

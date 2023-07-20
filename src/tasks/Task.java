@@ -1,7 +1,5 @@
 package tasks;
 
-import manager.Manager;
-
 import java.util.Objects;
 
 
@@ -9,13 +7,12 @@ public class Task {
     private String name;
     private String description;
     private int id;
-    protected String status;
+    protected Status status;
 
     public Task(String name, String description) {
         this.name = name;
-        this.description = description;
-        this.id = Manager.getId();
-        this.status = "NEW";
+        this.description = description;;
+        status = Status.NEW;
     }
 
     public int getId() {
@@ -26,7 +23,7 @@ public class Task {
         return description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -42,17 +39,12 @@ public class Task {
         this.description = description;
     }
 
-    public void setStatus(String status) {
-        if(status==null){
-            return;
-        }
-        if (status.equals("NEW") || status.equals("IN_PROGRESS") || status.equals("DONE")) {
-            this.status = status;
+    public void setId(int id) {
+        this.id = id;
+    }
 
-        } else {
-            System.out.println("The status hasn't been set");
-        }
-
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -60,14 +52,16 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description);
+        return id == task.id && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description) && status == task.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id);
+        return Objects.hash(name, description, id,status);
     }
 
+    @Override
     public String toString() {
         return "Task:\n(Name = " + getName() + ",\n Description = " + getDescription()
                 + ",\n Id = " + getId() + ",\n Status = " + getStatus() + ")";

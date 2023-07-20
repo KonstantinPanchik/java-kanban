@@ -45,15 +45,21 @@ public void removeTask(int id)
 ```
 3. Получение по идентификатору.
 ```java
- public void removeTask(int id)
+ public void getTask(int id)
 ```
 4. Создание. Сам объект должен передаваться в качестве параметра.
+Реализованы 3 метода: 
 ```java
- public void setTasks(Task... tasks)
+    public void addTask(Task task)
+    public void addEpic(Epic epic)
+    public void addSubTask(SubTask subTask)
 ```
-5. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
+5. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра. 
+Реализованы 3 метода:
 ```java
- public void updateTask(Task task)
+    public void updateTask(Task task) 
+    public void updateEpic(Epic epic) 
+    public void updateSubTask(SubTask subTask)
 ```
 6. Удаление по идентификатору.
 ```java
@@ -84,18 +90,13 @@ public ArrayList<SubTask> getSubTasksOfEpic(Epic epic)
     }
 
     public void updateStatus() {
-        String status = "NEW";
+        Status status = Status.NEW;
         if (!subTasksInEpic.isEmpty()) {
-            int i = 0;
-            String statusArray[] = new String[subTasksInEpic.size()];
-            for (SubTask subTask : subTasksInEpic.values()) {
-                statusArray[i++] = subTask.status;
-            }
-        status = statusArray[0];
-            for (int j = 1; j < statusArray.length; j++) {
-                if (!status.equals(statusArray[j])) {
-                    status = "IN_PROGRESS";
-                    break;
+            status = subTasksInEpic.get(0).getStatus();
+            for (int i = 1; i < subTasksInEpic.size(); i++) {
+                if (status != subTasksInEpic.get(i).getStatus()) {
+                    this.status = Status.IN_PROGRESS;
+                    return;
                 }
             }
         }
