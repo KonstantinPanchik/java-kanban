@@ -55,7 +55,7 @@ public class Main {
         //Удаление эпика
         manager.removeTaskById(planVacation.getId());
         System.out.println(manager.getAllEpicTasks());
-        System.out.println("___________");
+        System.out.println("_____________________________________");
         manager.removeAllTasks();
         System.out.println(manager.getAllTasks());
 

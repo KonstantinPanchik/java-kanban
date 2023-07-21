@@ -80,27 +80,15 @@ public class Manager {
     }
 
     public ArrayList<Task> getAllUsualTasks() {
-        ArrayList<Task> listOfTasks = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            listOfTasks.add(task);
-        }
-        return listOfTasks;
+        return new ArrayList<>(tasks.values());
     }
 
     public ArrayList<Epic> getAllEpicTasks() {
-        ArrayList<Epic> listOfEpics = new ArrayList<>();
-        for (Epic task : epics.values()) {
-            listOfEpics.add(task);
-        }
-        return listOfEpics;
+        return new ArrayList<>(epics.values());
     }
 
     public ArrayList<SubTask> getAllSubTasks() {
-        ArrayList<SubTask> listOfSubTask = new ArrayList<>();
-        for (SubTask task : subTasks.values()) {
-            listOfSubTask.add(task);
-        }
-        return listOfSubTask;
+        return new ArrayList<>(subTasks.values());
     }
 
     public ArrayList<Task> getAllTasks() {
@@ -132,15 +120,15 @@ public class Manager {
             Epic epic = epics.get(id);
             for (SubTask subTask : epic.getSubTasksInEpic()) {
                 subTasks.remove(subTask.getId());
+                epic.removeSubTask(subTask);
             }
-            epic.getSubTasksInEpic().clear();
             epics.remove(id);
             return;
         }
         if (subTasks.containsKey(id)) {
             SubTask subTask = subTasks.get(id);
             Epic epic = epics.get(subTask.getEpicId());
-            epic.getSubTasksInEpic().remove(subTask);
+            epic.removeSubTask(subTask); //новый метод
             epic.updateStatus();
             subTasks.remove(id);
         }
