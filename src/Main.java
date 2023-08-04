@@ -63,20 +63,16 @@ public class Main {
         System.out.println(manager.getAllTasks());
 
 
-        System.out.println("@@@@@@@@@@@");
+        System.out.println("Получаем задачи по ID");
         manager.getTask(openDepositInBank.getId());
         manager.getTask(hospitalCheckIn.getId());
         manager.getTask(hospitalCheckIn.getId());
 
 
-        System.out.println("ddddd");
+        System.out.println("Печать истории просмотра ");
         for (Task task : historyManager.getHistory()) {
-
             System.out.println(task.getName());
         }
-
-
-
     }
 
 }
