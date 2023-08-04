@@ -129,7 +129,6 @@ public class Manager {
             SubTask subTask = subTasks.get(id);
             Epic epic = epics.get(subTask.getEpicId());
             epic.removeSubTask(subTask); //новый метод
-            epic.updateStatus();
             subTasks.remove(id);
         }
     }
