@@ -1,4 +1,6 @@
-import manager.Manager;
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
 import tasks.Epic;
 import tasks.Status;
 import tasks.SubTask;
@@ -8,7 +10,9 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        Manager manager = new Manager();
+
+        TaskManager manager = Managers.getDefault();
+        HistoryManager historyManager = Managers.getDefaultHistory();
         //Создание задачи
         Task openDepositInBank = new Task("Открыть депозит в банке", "Сходить в банк и открыть счёт");
         manager.addTask(openDepositInBank);
@@ -35,7 +39,7 @@ public class Main {
         manager.addSubTask(askAboutFreeDates);
 
 
-        //Печать всех списков определенных задач
+//        Печать всех списков определенных задач
         System.out.println(manager.getAllUsualTasks());
         System.out.println();
         System.out.println(manager.getAllEpicTasks());
@@ -56,8 +60,22 @@ public class Main {
         manager.removeTaskById(planVacation.getId());
         System.out.println(manager.getAllEpicTasks());
         System.out.println("_____________________________________");
-        manager.removeAllTasks();
         System.out.println(manager.getAllTasks());
+
+
+        System.out.println("@@@@@@@@@@@");
+        manager.getTask(openDepositInBank.getId());
+        manager.getTask(hospitalCheckIn.getId());
+        manager.getTask(hospitalCheckIn.getId());
+
+
+        System.out.println("ddddd");
+        for (Task task : historyManager.getHistory()) {
+
+            System.out.println(task.getName());
+        }
+
+
 
     }
 

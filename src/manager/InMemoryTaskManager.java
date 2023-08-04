@@ -1,26 +1,32 @@
 package manager;
 
-import tasks.*;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager {
     HashMap<Integer, Task> tasks;
     HashMap<Integer, SubTask> subTasks;
     HashMap<Integer, Epic> epics;
     private static int createdId;
 
-    public Manager() {
+    private HistoryManager historyManager;
+
+    public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.epics = new HashMap<>();
+        this.historyManager = Managers.getDefaultHistory();
     }
 
     private static int createId() {
         return ++createdId;
     }
 
+    @Override
     public void addTask(Task task) {
         if (task == null) {
             return;
@@ -37,6 +43,7 @@ public class Manager {
         System.out.println("Task " + task.getName() + " has been added");
     }
 
+    @Override
     public void addEpic(Epic epic) {
         if (epic == null) {
             return;
@@ -53,6 +60,7 @@ public class Manager {
         System.out.println("Epic " + epic.getName() + " has been added");
     }
 
+    @Override
     public void addSubTask(SubTask subTask) {
         if (subTask == null) {
             return;
@@ -79,18 +87,22 @@ public class Manager {
 
     }
 
+    @Override
     public ArrayList<Task> getAllUsualTasks() {
         return new ArrayList<>(tasks.values());
     }
 
+    @Override
     public ArrayList<Epic> getAllEpicTasks() {
         return new ArrayList<>(epics.values());
     }
 
+    @Override
     public ArrayList<SubTask> getAllSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
+    @Override
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> list = new ArrayList<>(getAllUsualTasks());
         list.addAll(getAllEpicTasks());
@@ -98,19 +110,24 @@ public class Manager {
         return list;
     }
 
+    @Override
     public Task getTask(int id) {
         if (epics.containsKey(id)) {
+            historyManager.add(epics.get(id));
             return epics.get(id);
         }
         if (subTasks.containsKey(id)) {
+            historyManager.add(subTasks.get(id));
             return subTasks.get(id);
         }
         if (tasks.containsKey(id)) {
+            historyManager.add(tasks.get(id));
             return tasks.get(id);
         }
         return null;
     }
 
+    @Override
     public void removeTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
@@ -133,17 +150,19 @@ public class Manager {
         }
     }
 
+    @Override
     public void removeAllTasks() {
         tasks.clear();
         epics.clear();
         subTasks.clear();
     }
 
+    @Override
     public ArrayList<SubTask> getSubTasksOfEpic(Epic epic) {
         return epic.getSubTasksInEpic();
     }
 
-
+    @Override
     public void updateTask(Task task) {
         if (task == null) {
             return;
@@ -155,6 +174,7 @@ public class Manager {
         tasks.put(task.getId(), task);
     }
 
+    @Override
     public void updateEpic(Epic epic) {
         if (epic == null) {
             return;
@@ -167,6 +187,7 @@ public class Manager {
         epics.put(epic.getId(), epic);
     }
 
+    @Override
     public void updateSubTask(SubTask subTask) {
         if (subTask == null) {
             return;
@@ -179,5 +200,9 @@ public class Manager {
         subTasks.put(subTask.getId(), subTask);
     }
 
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
 }
 
