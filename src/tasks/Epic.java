@@ -1,10 +1,12 @@
 package tasks;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class Epic extends Task {
 
-   private ArrayList<SubTask> subTasksInEpic;
+    private List<SubTask> subTasksInEpic;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -31,8 +33,7 @@ public class Epic extends Task {
         this.status = status;
     }
 
-    //метод теперь возвращает копию листа subTasksInEpic, а не сам лист
-    public ArrayList <SubTask> getSubTasksInEpic() {
+    public List <SubTask> getSubTasksInEpic() {
         return new ArrayList<>(subTasksInEpic);
     }
 

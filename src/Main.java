@@ -12,7 +12,7 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager manager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
+
         //Создание задачи
         Task openDepositInBank = new Task("Открыть депозит в банке", "Сходить в банк и открыть счёт");
         manager.addTask(openDepositInBank);
@@ -67,10 +67,11 @@ public class Main {
         manager.getTask(openDepositInBank.getId());
         manager.getTask(hospitalCheckIn.getId());
         manager.getTask(hospitalCheckIn.getId());
+        manager.getTask(1);
 
+        System.out.println("Печать истории просмотра: ");
+        for (Task task : manager.getHistory()) {
 
-        System.out.println("Печать истории просмотра ");
-        for (Task task : historyManager.getHistory()) {
             System.out.println(task.getName());
         }
     }
