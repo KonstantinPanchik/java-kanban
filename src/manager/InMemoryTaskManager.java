@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 public class InMemoryTaskManager implements TaskManager {
     Map<Integer, Task> tasks;
     Map<Integer, SubTask> subTasks;
@@ -89,7 +90,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public  List<Task> getAllUsualTasks() {
+    public List<Task> getAllUsualTasks() {
         return new ArrayList<>(tasks.values());
     }
 
@@ -130,25 +131,33 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTaskById(int id) {
+
         if (tasks.containsKey(id)) {
+            System.out.println("Task "+getTask(id).getName()+" has been deleted.");
             tasks.remove(id);
-            return;
+            historyManager.remove(id);
         }
-        if (epics.containsKey(id)) {  // при удаление эпика все его субТаски также удаляются
+        if (epics.containsKey(id)) {
+            System.out.println("Task "+getTask(id).getName()+" has been deleted.");// при удаление эпика все его субТаски также удаляются
             Epic epic = epics.get(id);
             for (SubTask subTask : epic.getSubTasksInEpic()) {
                 subTasks.remove(subTask.getId());
+                historyManager.remove(subTask.getId());
                 epic.removeSubTask(subTask);
             }
             epics.remove(id);
-            return;
+            historyManager.remove(id);
+
         }
         if (subTasks.containsKey(id)) {
+            System.out.println("Task "+getTask(id).getName()+" has been deleted.");
             SubTask subTask = subTasks.get(id);
             Epic epic = epics.get(subTask.getEpicId());
             epic.removeSubTask(subTask); //новый метод
             subTasks.remove(id);
+            historyManager.remove(id);
         }
+
     }
 
     @Override
@@ -202,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 }

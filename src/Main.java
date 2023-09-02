@@ -16,6 +16,9 @@ public class Main {
         //Создание задачи
         Task openDepositInBank = new Task("Открыть депозит в банке", "Сходить в банк и открыть счёт");
         manager.addTask(openDepositInBank);
+
+
+
         //Создание эпиков
         Epic hospitalCheckIn = new Epic("Обследование в поликлиннике", "Пройти все необходимые процедуры");
         //добавление эпика
@@ -30,7 +33,11 @@ public class Main {
         SubTask ultrasound = new SubTask("УЗИ", "Пройти узи брюшной полости", hospitalCheckIn.getId());
         manager.addSubTask(ultrasound);
 
-        Epic planVacation = new Epic("Разпланировать отпуск", "Проверить все дела и запланировть отпуск");
+       SubTask removingBirthmark= new SubTask("Удаление родинки","Удалить родинку у онколога"
+               , hospitalCheckIn.getId());
+       manager.addSubTask(removingBirthmark);
+
+       Epic planVacation = new Epic("Разпланировать отпуск", "Проверить все дела и запланировть отпуск");
         manager.addEpic(planVacation);
 
         SubTask askAboutFreeDates = new SubTask("Спросить даты"
@@ -38,38 +45,55 @@ public class Main {
                 , planVacation.getId());
         manager.addSubTask(askAboutFreeDates);
 
-
-//        Печать всех списков определенных задач
-        System.out.println(manager.getAllUsualTasks());
-        System.out.println();
-        System.out.println(manager.getAllEpicTasks());
-        System.out.println();
-        System.out.println(manager.getAllSubTasks());
-        System.out.println("_____________________________________");
-        //Изменение статуса в подзадачах
-        ultrasound.setStatus(Status.DONE);
-        bloodAnalysis.setStatus(Status.DONE);
-        manager.updateEpic(hospitalCheckIn);
-        System.out.println(hospitalCheckIn);
-        System.out.println("_____________________________________");
-        //Удаление задачи из эпика
-        manager.removeTaskById(ultrasound.getId());
-        System.out.println(hospitalCheckIn);
-        System.out.println("_____________________________________");
-        //Удаление эпика
-        manager.removeTaskById(planVacation.getId());
-        System.out.println(manager.getAllEpicTasks());
-        System.out.println("_____________________________________");
-        System.out.println(manager.getAllTasks());
+        SubTask searchHotel = new SubTask("Найти отель","Выбрать хороший отель на Яндекс.Путешествиях",
+                planVacation.getId());
+        manager.addSubTask(searchHotel);
 
 
-        System.out.println("Получаем задачи по ID");
+        System.out.println("\n1 Получаем задачи по ID");
+        manager.getTask(bloodAnalysis.getId());
+        manager.getTask(ultrasound.getId());
         manager.getTask(openDepositInBank.getId());
         manager.getTask(hospitalCheckIn.getId());
         manager.getTask(hospitalCheckIn.getId());
-        manager.getTask(1);
+        manager.getTask(planVacation.getId());
+        manager.getTask(askAboutFreeDates.getId());
+        manager.getTask(searchHotel.getId());
+        manager.getTask(ultrasound.getId());
 
-        System.out.println("Печать истории просмотра: ");
+        System.out.println("\nПечать истории просмотра: ");
+        for (Task task : manager.getHistory()) {
+
+            System.out.println(task.getName());
+        }
+
+
+        System.out.println("\n2 Получаем задачи по ID");
+        manager.getTask(searchHotel.getId());
+        manager.getTask(bloodAnalysis.getId());
+        manager.getTask(hospitalCheckIn.getId());
+        manager.getTask(ultrasound.getId());
+        manager.getTask(openDepositInBank.getId());
+        manager.getTask(hospitalCheckIn.getId());
+        manager.getTask(hospitalCheckIn.getId());
+        manager.getTask(removingBirthmark.getId());
+        manager.getTask(searchHotel.getId());
+        manager.getTask(ultrasound.getId());
+        manager.getTask(ultrasound.getId());
+        manager.getTask(searchHotel.getId());
+        manager.getTask(planVacation.getId());
+        manager.getTask(askAboutFreeDates.getId());
+
+        System.out.println("\nУдаление задач:");
+
+        manager.removeTaskById(ultrasound.getId());
+
+
+        manager.removeTaskById(planVacation.getId());
+
+
+
+        System.out.println("\nПечать истории просмотра: ");
         for (Task task : manager.getHistory()) {
 
             System.out.println(task.getName());
