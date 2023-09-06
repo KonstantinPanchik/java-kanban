@@ -165,6 +165,8 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.clear();
         epics.clear();
         subTasks.clear();
+        historyManager.removeAllTasks();
+        System.out.println("All tasks have been deleted");
     }
 
     @Override

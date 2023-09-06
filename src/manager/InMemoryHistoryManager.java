@@ -10,6 +10,7 @@ import java.util.Map;
 public class InMemoryHistoryManager implements HistoryManager {
 
     final CustomLinkedList<Task> savedHistory = new CustomLinkedList<>();
+    private final Map<Integer, Node> savedHistoryMap = new HashMap<>();
 
     @Override
     public void add(Task task) {
@@ -17,9 +18,10 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
         int id = task.getId();
-        remove(id);
-        savedHistory.linkedLast(task);
-        savedHistory.savedHistoryMap.put(id, savedHistory.getLast());
+        if (savedHistoryMap.containsKey(id)) {
+            remove(id);
+        }
+        savedHistoryMap.put(id, savedHistory.linkedLast(task));
 
     }
 
@@ -36,24 +38,29 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        Node node = savedHistory.savedHistoryMap.remove(id);
+        Node node = savedHistoryMap.remove(id);
         if (node == null) {
             return;
         }
         savedHistory.removeNode(node);
     }
 
+    @Override
+    public void removeAllTasks() {
+
+     for (int id:savedHistoryMap.keySet()){
+         savedHistory.removeNode(savedHistoryMap.get(id));
+     }
+        savedHistoryMap.clear();
+    }
+
     public static class CustomLinkedList<T extends Task> {
-        private final Map<Integer, Node> savedHistoryMap = new HashMap<>();
+
         private Node first;
         private Node last;
 
         public Node getFirst() {
             return first;
-        }
-
-        public Node getLast() {
-            return last;
         }
 
         void removeNode(Node node) {
@@ -73,7 +80,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
         }
 
-        void linkedLast(Task task) {
+        Node linkedLast(Task task) {
             Node node = new Node(task, last, null);
             if (first == null) {
                 first = node;
@@ -81,6 +88,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 last.next = node;
             }
             last = node;
+            return node;
         }
     }
 

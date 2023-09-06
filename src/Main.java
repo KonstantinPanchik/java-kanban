@@ -98,6 +98,14 @@ public class Main {
 
             System.out.println(task.getName());
         }
+
+        manager.removeAllTasks();
+
+        System.out.println("\nПечать истории просмотра: ");
+        for (Task task : manager.getHistory()) {
+
+            System.out.println(task.getName());
+        }
     }
 
 }
