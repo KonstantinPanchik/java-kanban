@@ -89,7 +89,7 @@ public class Main {
         manager.removeTaskById(ultrasound.getId());
 
 
-        manager.removeTaskById(planVacation.getId());
+      
 
 
 
@@ -106,6 +106,7 @@ public class Main {
 
             System.out.println(task.getName());
         }
+        System.out.println(planVacation);
     }
 
 }

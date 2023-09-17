@@ -1,7 +1,6 @@
 package tasks;
 
 
-
 import java.util.Objects;
 
 
@@ -11,10 +10,20 @@ public class Task {
     private int id;
     protected Status status;
 
+    private Type type = Type.TASK;
+
+
     public Task(String name, String description) {
         this.name = name;
-        this.description = description;;
+        this.description = description;
         status = Status.NEW;
+    }
+
+    public Task(int id, String name, Status status, String description) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
     }
 
     public int getId() {
@@ -60,14 +69,18 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id,status);
+        return Objects.hash(name, description, id, status);
     }
 
     @Override
     public String toString() {
-        return "Task:\n(Name = " + getName() + ",\n Description = " + getDescription()
-                + ",\n Id = " + getId() + ",\n Status = " + getStatus() + ")";
+
+        String result = getId() + "," + Type.TASK + "," + getName() + "," + getStatus() + "," + getDescription() + "," + " ";
+        return result;
 
     }
 
+    public Type getType() {
+        return type;
+    }
 }

@@ -7,10 +7,17 @@ import java.util.List;
 public class Epic extends Task {
 
     private List<SubTask> subTasksInEpic;
+    Type type = Type.EPIC;
+
 
     public Epic(String name, String description) {
         super(name, description);
         subTasksInEpic = new ArrayList<>();
+    }
+
+    public Epic(int id, String name, Status status, String description) {
+        super(id, name, status, description);
+        this.subTasksInEpic = new ArrayList<>();
     }
 
     @Override
@@ -33,11 +40,11 @@ public class Epic extends Task {
         this.status = status;
     }
 
-    public List <SubTask> getSubTasksInEpic() {
+    public List<SubTask> getSubTasksInEpic() {
         return new ArrayList<>(subTasksInEpic);
     }
 
-    public void removeSubTask(SubTask subTask){
+    public void removeSubTask(SubTask subTask) {
         subTasksInEpic.remove(subTask);
         updateStatus();
     }
@@ -48,15 +55,15 @@ public class Epic extends Task {
     }
 
     @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
     public String toString() {
 
-        String result = "Epic:\n(Name = " + getName() + ",\n Description = " + getDescription()
-                + ",\n Id = " + getId() + ",\n Status = " + getStatus() + ")\n Subtasks in this Epic:\n{\n";
-        for (SubTask subTask : subTasksInEpic) {
-            result = result + subTask.toString();
+        String result = getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + "," + " ";
 
-        }
-        result = result + " }\n";
         return result;
     }
 }

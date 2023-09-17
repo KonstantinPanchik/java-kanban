@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     Map<Integer, Epic> epics;
     private static int createdId;
 
-    private HistoryManager historyManager;
+    protected HistoryManager historyManager;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
@@ -40,7 +40,9 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("You can't add " + task.getName() + " Task. The Task is added already");
             return;
         }
-        task.setId(createId());
+        if (task.getId() == 0) {
+            task.setId(createId());
+        }
         tasks.put(task.getId(), task);
         System.out.println("Task " + task.getName() + " has been added");
     }
@@ -57,7 +59,9 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("You can't add " + epic.getName() + " Epic. The Epic is added already");
             return;
         }
-        epic.setId(createId());
+        if (epic.getId() == 0) {
+            epic.setId(createId());
+        }
         epics.put(epic.getId(), epic);
         System.out.println("Epic " + epic.getName() + " has been added");
     }
@@ -83,7 +87,10 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("SubTask " + subTask.getName() + " has not been added");
             return;
         }
-        subTask.setId(createId());
+        if (subTask.getId() == 0) {
+            subTask.setId(createId());
+        }
+
         subTasks.put(subTask.getId(), subTask);
         System.out.println("SubTask " + subTask.getName() + " has been added");
 
@@ -133,12 +140,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTaskById(int id) {
 
         if (tasks.containsKey(id)) {
-            System.out.println("Task "+getTask(id).getName()+" has been deleted.");
+            System.out.println("Task " + getTask(id).getName() + " has been deleted.");
             tasks.remove(id);
             historyManager.remove(id);
         }
         if (epics.containsKey(id)) {
-            System.out.println("Task "+getTask(id).getName()+" has been deleted.");// при удаление эпика все его субТаски также удаляются
+            System.out.println("Task " + getTask(id).getName() + " has been deleted.");// при удаление эпика все его субТаски также удаляются
             Epic epic = epics.get(id);
             for (SubTask subTask : epic.getSubTasksInEpic()) {
                 subTasks.remove(subTask.getId());
@@ -150,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         }
         if (subTasks.containsKey(id)) {
-            System.out.println("Task "+getTask(id).getName()+" has been deleted.");
+            System.out.println("Task " + getTask(id).getName() + " has been deleted.");
             SubTask subTask = subTasks.get(id);
             Epic epic = epics.get(subTask.getEpicId());
             epic.removeSubTask(subTask); //новый метод
