@@ -1,11 +1,10 @@
 package manager;
 
-import Builders.TaskBuilder;
+import TaskBuilder.TaskBuilder;
 import tasks.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -118,18 +117,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-
+            String taskLine=null;
             while (reader.ready()) {
-                String taskLine = reader.readLine();
+                taskLine = reader.readLine();
                 Task t = TaskBuilder.fromString(taskLine);
                 fileBackedTasksManager.fillMapsByTask(t);
             }
 
-            fileBackedTasksManager.fillHistoryList(file);
+            fileBackedTasksManager.fillHistoryList(taskLine);
 
         } catch (IOException e) {
             throw new ManagerSaveException("Файл не найден!!!");
         }
+
+
         return fileBackedTasksManager;
     }
 
@@ -153,33 +154,37 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             default: {
             }
         }
+        fillEpics();
     }
 
-    void fillHistoryList(File file) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String last = null, line;
-            while (null != (line = br.readLine())) {
-                last = line;
-            }
+    void fillHistoryList(String last) {
             for (int i : TaskBuilder.historyFromString(last)) {
-               this.historyManager.add(this.getTask(i));
+                this.historyManager.add(this.getTask(i));
             }
-
-        } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка чтения истории из файла");
-        }
-
     }
 
-// проверка работоспособности
+
+    void fillEpics() {
+        for (SubTask subTask : subTasks.values()) {
+            Epic epic = epics.get(subTask.getEpicId());
+            epic.addSubTaskInEpic(subTask);
+        }
+    }
+
+    // проверка работоспособности
     public static void main(String[] args) {
         File file = Paths.get("save.csv").toFile();
         TaskManager manager = FileBackedTasksManager.loadFromFile(file);
+
 
         System.out.println("\nПечать истории просмотра: ");
 
 
         manager.getTask(1);
+
+
+
+
         for (Task task : manager.getHistory()) {
 
             System.out.println(task.getName());
