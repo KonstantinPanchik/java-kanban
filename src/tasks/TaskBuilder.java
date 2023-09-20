@@ -1,7 +1,7 @@
-package TaskBuilder;
+package tasks;
 
 import manager.HistoryManager;
-import tasks.*;
+
 
 import java.util.ArrayList;
 import java.util.List;

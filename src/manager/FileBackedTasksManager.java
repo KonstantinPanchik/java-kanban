@@ -1,11 +1,12 @@
 package manager;
 
-import TaskBuilder.TaskBuilder;
+import tasks.TaskBuilder;
 import tasks.*;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     File file;
@@ -117,7 +118,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String taskLine=null;
+            String taskLine = null;
             while (reader.ready()) {
                 taskLine = reader.readLine();
                 Task t = TaskBuilder.fromString(taskLine);
@@ -125,13 +126,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
 
             fileBackedTasksManager.fillHistoryList(taskLine);
-
+            fileBackedTasksManager.fillEpics();
+            fileBackedTasksManager.setCreatedID();
         } catch (IOException e) {
             throw new ManagerSaveException("Файл не найден!!!");
         }
 
 
         return fileBackedTasksManager;
+    }
+
+    void setCreatedID() {
+        List<Integer> findMax = new ArrayList<Integer>(tasks.keySet());
+        findMax.addAll(new ArrayList<>(epics.keySet()));
+        findMax.addAll(new ArrayList<>(subTasks.keySet()));
+        for (Integer id : findMax) {
+            if (id > createdId) {
+                createdId = id;
+            }
+        }
     }
 
     void fillMapsByTask(Task t) {
@@ -154,13 +167,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             default: {
             }
         }
-        fillEpics();
+
     }
 
     void fillHistoryList(String last) {
-            for (int i : TaskBuilder.historyFromString(last)) {
-                this.historyManager.add(this.getTask(i));
-            }
+        for (int i : TaskBuilder.historyFromString(last)) {
+            this.historyManager.add(this.getTask(i));
+        }
     }
 
 
@@ -176,13 +189,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         File file = Paths.get("save.csv").toFile();
         TaskManager manager = FileBackedTasksManager.loadFromFile(file);
 
-
+//        9,SUBTASK,Узи,NEW,Пройти узи брюшной полости,2
+        SubTask ultraSaund = new SubTask("Узи", "Пройти узи брюшной полости", 2);
+        manager.addSubTask(ultraSaund);
         System.out.println("\nПечать истории просмотра: ");
 
 
         manager.getTask(1);
-
-
 
 
         for (Task task : manager.getHistory()) {

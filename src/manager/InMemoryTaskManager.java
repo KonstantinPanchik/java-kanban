@@ -13,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     Map<Integer, Task> tasks;
     Map<Integer, SubTask> subTasks;
     Map<Integer, Epic> epics;
-    private int createdId;
+    protected int createdId;
 
     protected HistoryManager historyManager;
 
@@ -25,14 +25,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private int createId() {
-        while (true) {
-            int id = ++createdId;
-            if (tasks.containsKey(id) || epics.containsKey(id) || subTasks.containsKey(id)) {
-            } else {
-                return id;
-            }
-
-        }
+            return  ++createdId;
     }
 
     @Override
