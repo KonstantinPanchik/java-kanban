@@ -1,6 +1,13 @@
 package tasks;
 
 
+import java.sql.Date;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 
@@ -8,6 +15,13 @@ public class Task {
     private String name;
     private String description;
     private int id;
+
+    protected long duration;
+
+    protected LocalDateTime startTime;
+
+
+
     protected Status status;
 
     private Type type = Type.TASK;
@@ -18,12 +32,27 @@ public class Task {
         this.description = description;
         status = Status.NEW;
     }
-
+    public Task(String name, String description,LocalDateTime startTime,int duration) {
+        this.name = name;
+        this.description = description;
+        status = Status.NEW;
+        this.startTime=startTime;
+        this.duration=duration;
+    }
     public Task(int id, String name, Status status, String description) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+
+    }
+    public Task(int id, String name, Status status, String description,LocalDateTime startTime,int duration) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.duration=duration;
+        this.startTime=startTime;
     }
 
     public int getId() {
@@ -75,12 +104,28 @@ public class Task {
     @Override
     public String toString() {
 
-        String result = getId() + "," + Type.TASK + "," + getName() + "," + getStatus() + "," + getDescription() + "," + " ";
+        String result = getId() + "," + Type.TASK + "," + getName() + "," + getStatus() + "," + getDescription() + ","
+                + " "+getStartTime();
         return result;
 
     }
 
     public Type getType() {
         return type;
+    }
+
+    public LocalDateTime getEndTime(){
+        if (startTime==null){
+            return null;
+        }
+        LocalDateTime endTime=startTime.plus(duration, ChronoUnit.MINUTES);
+        return endTime;
+    }
+    public long getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 }

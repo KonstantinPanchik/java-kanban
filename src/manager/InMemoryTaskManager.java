@@ -3,11 +3,10 @@ package manager;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
+import tasks.Type;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     Map<Integer, Task> tasks;
@@ -25,7 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private int createId() {
-            return  ++createdId;
+        return ++createdId;
     }
 
     @Override
@@ -38,6 +37,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (tasks.containsValue(task)) {
             System.out.println("You can't add " + task.getName() + " Task. The Task is added already");
+            return;
+        }
+        if (!isTimeSlotAvailable(task)) {
             return;
         }
         if (task.getId() == 0) {
@@ -55,7 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getClass() != Epic.class) {
             return;
         }
-        if (tasks.containsValue(epic)) {
+        if (epics.containsValue(epic)) {
             System.out.println("You can't add " + epic.getName() + " Epic. The Epic is added already");
             return;
         }
@@ -74,13 +76,17 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTask.getClass() != SubTask.class) {
             return;
         }
-        if (tasks.containsValue(subTask)) {
+        if (subTasks.containsValue(subTask)) {
             System.out.println("You can't add " + subTask.getName() + " SubTask. The SubTask is added already");
+            return;
+        }
+        if (!isTimeSlotAvailable(subTask)) {
             return;
         }
         Epic epic;
         if (epics.containsKey(subTask.getEpicId())) {
             epic = epics.get(subTask.getEpicId());
+            //Эпик добавляет в себя Сабтаски при вызове метода
             epic.addSubTaskInEpic(subTask);
         } else {
             System.out.println("There is not Epic with id " + subTask.getEpicId());
@@ -219,6 +225,59 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.put(subTask.getId(), subTask);
     }
 
+    @Override
+    public Collection<Task> getPrioritizedTasks() {
+        TreeSet<Task> timeSortedTasks = new TreeSet<>((task1, task2) -> {
+            if (task1.getStartTime() == null) {
+                return 1;
+            }
+            if (task2.getStartTime() == null) {
+                return -1;
+            }
+            if (task1.getStartTime().isBefore(task2.getStartTime())) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+        timeSortedTasks.addAll(getAllUsualTasks());
+        timeSortedTasks.addAll(getAllSubTasks());
+
+        return timeSortedTasks;
+    }
+
+    public boolean isTimeSlotAvailable(Task newTask) {
+        boolean isAvalible = true;
+
+        if (newTask.getType().equals(Type.EPIC)) {
+            return isAvalible;
+        }
+        if (newTask.getStartTime() == null) {
+            System.out.println("Дата и время не заданны, задачу можно добавить");
+            return isAvalible;
+        }
+        LocalDateTime newTaskStartTime = newTask.getStartTime();
+        LocalDateTime newTaskEndTime = newTask.getEndTime();
+
+        for (Task priorityTask : getPrioritizedTasks()) {
+
+            LocalDateTime existTaskStartTime = priorityTask.getStartTime();
+            LocalDateTime existTaskEndTime = priorityTask.getEndTime();
+
+            if (existTaskStartTime != null) {
+
+                boolean NewStartIsAfterExEnd = newTaskStartTime.isBefore(existTaskEndTime);
+                boolean NewEndIsBeforeExStart = newTaskEndTime.isAfter(existTaskStartTime);
+
+                if (NewEndIsBeforeExStart && NewStartIsAfterExEnd) {
+                    isAvalible = false;
+                    System.out.println("Вы не можете добавить задачу " + newTask.getName()
+                            + ", в это время выполняется задача " + priorityTask.getName());
+                }
+            }
+        }
+        return isAvalible;
+    }
 
     public List<Task> getHistory() {
         return historyManager.getHistory();

@@ -89,7 +89,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         try (Writer writer = new FileWriter(fileName)) {
             StringBuilder insideFile = new StringBuilder();
-            insideFile.append("id,type,name,status,description,epic\n");
+            insideFile.append("id,type,name,status,description,epic,startDate,duration\n");
             for (Integer integer : tasks.keySet()) {
                 String line = TaskBuilder.toString(tasks.get(integer));
                 insideFile.append(line + "\n");
@@ -126,7 +126,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
 
             fileBackedTasksManager.fillHistoryList(taskLine);
-            fileBackedTasksManager.fillEpics();
+
             fileBackedTasksManager.setCreatedID();
         } catch (IOException e) {
             throw new ManagerSaveException("Файл не найден!!!");
@@ -177,12 +177,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
 
-    void fillEpics() {
-        for (SubTask subTask : subTasks.values()) {
-            Epic epic = epics.get(subTask.getEpicId());
-            epic.addSubTaskInEpic(subTask);
-        }
-    }
+
 
     // проверка работоспособности
     public static void main(String[] args) {
@@ -190,11 +185,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         TaskManager manager = FileBackedTasksManager.loadFromFile(file);
 
 //        9,SUBTASK,Узи,NEW,Пройти узи брюшной полости,2
-        SubTask ultraSaund = new SubTask("Узи", "Пройти узи брюшной полости", 2);
-        manager.addSubTask(ultraSaund);
-        System.out.println("\nПечать истории просмотра: ");
+//        SubTask ultraSaund = new SubTask("Узи", "Пройти узи брюшной полости", 2);
+//        manager.addSubTask(ultraSaund);
+//        System.out.println("\nПечать истории просмотра: ");
 
-
+        List<Epic> list = manager.getAllEpicTasks();
+        System.out.println(list.get(0).getSubTasksInEpic());
         manager.getTask(1);
 
 

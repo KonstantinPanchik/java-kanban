@@ -4,7 +4,9 @@ import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     void addTask(Task task);
@@ -36,5 +38,7 @@ public interface TaskManager {
     void updateSubTask(SubTask subTask);
 
     List<Task> getHistory();
+
+    Collection<Task> getPrioritizedTasks();
 }
 
