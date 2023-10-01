@@ -24,33 +24,27 @@ public class Task {
 
     protected Status status;
 
-    private Type type = Type.TASK;
+    protected Type type;
 
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         status = Status.NEW;
+         type=  Type.TASK;
     }
     public Task(String name, String description,LocalDateTime startTime,int duration) {
-        this.name = name;
-        this.description = description;
-        status = Status.NEW;
+        this(name,description);
         this.startTime=startTime;
         this.duration=duration;
     }
     public Task(int id, String name, Status status, String description) {
-        this.name = name;
-        this.description = description;
+        this(name, description);
         this.id = id;
         this.status = status;
-
     }
     public Task(int id, String name, Status status, String description,LocalDateTime startTime,int duration) {
-        this.name = name;
-        this.description = description;
-        this.id = id;
-        this.status = status;
+      this(id,name,status,description);
         this.duration=duration;
         this.startTime=startTime;
     }

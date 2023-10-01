@@ -177,31 +177,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
 
-
-
-    // проверка работоспособности
-    public static void main(String[] args) {
-        File file = Paths.get("save.csv").toFile();
-        TaskManager manager = FileBackedTasksManager.loadFromFile(file);
-
-//        9,SUBTASK,Узи,NEW,Пройти узи брюшной полости,2
-//        SubTask ultraSaund = new SubTask("Узи", "Пройти узи брюшной полости", 2);
-//        manager.addSubTask(ultraSaund);
-//        System.out.println("\nПечать истории просмотра: ");
-
-        List<Epic> list = manager.getAllEpicTasks();
-        System.out.println(list.get(0).getSubTasksInEpic());
-        manager.getTask(1);
-
-
-        for (Task task : manager.getHistory()) {
-
-            System.out.println(task.getName());
-        }
-
-
-    }
-
 }
 
 

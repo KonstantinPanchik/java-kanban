@@ -9,39 +9,43 @@ import java.util.List;
 public class Epic extends Task {
 
     private List<SubTask> subTasksInEpic;
-    Type type = Type.EPIC;
 
     LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
         subTasksInEpic = new ArrayList<>();
+        type = Type.EPIC;
     }
 
     public Epic(int id, String name, Status status, String description) {
         super(id, name, status, description);
         this.subTasksInEpic = new ArrayList<>();
+        type = Type.EPIC;
     }
 
 
-    void solveTimeInEpic() {
+    private void solveTimeInEpic() {
+        duration = 0;
+        startTime = null;
+        endTime = null;
+
         if (getSubTasksInEpic().isEmpty()) {
-            startTime = null;
-            duration = 0;
-            endTime=null;
             return;
         }
         for (SubTask subTask : getSubTasksInEpic()) {
-            duration = 0;
-            duration +=subTask.getDuration();
 
-            LocalDateTime startTime = getSubTasksInEpic().get(0).getStartTime();
-            if (startTime == null || startTime.isAfter(subTask.getStartTime())) {
-                this.startTime = subTask.getStartTime();
+            duration += subTask.getDuration();
+
+            if(subTask.getStartTime()==null){
+                continue;
             }
-            LocalDateTime endTime = getSubTasksInEpic().get(0).getEndTime();
+            if (startTime == null || startTime.isAfter(subTask.getStartTime())) {
+                  startTime = subTask.getStartTime();
+            }
+
             if (endTime == null || endTime.isBefore(subTask.getEndTime())) {
-                this.endTime = subTask.getStartTime();
+                this.endTime = subTask.getEndTime();
             }
 
         }
@@ -99,7 +103,7 @@ public class Epic extends Task {
     public String toString() {
 
         String result = getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + ","
-                + " "+getStartTime();
+                + " " + getStartTime();
 
         return result;
     }

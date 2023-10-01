@@ -16,11 +16,27 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected HistoryManager historyManager;
 
+    Set<Task> timeSortedSet;
+
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.historyManager = historyManager;
+
+        timeSortedSet = new TreeSet<>((task1, task2) -> {
+            if (task1.getStartTime() == null) {
+                return 1;
+            }
+            if (task2.getStartTime() == null) {
+                return -1;
+            }
+            if (task1.getStartTime().isBefore(task2.getStartTime())) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
     }
 
     private int createId() {
@@ -46,6 +62,7 @@ public class InMemoryTaskManager implements TaskManager {
             task.setId(createId());
         }
         tasks.put(task.getId(), task);
+        timeSortedSet.add(task);
         System.out.println("Task " + task.getName() + " has been added");
     }
 
@@ -98,6 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         subTasks.put(subTask.getId(), subTask);
+        timeSortedSet.add(subTask);
         System.out.println("SubTask " + subTask.getName() + " has been added");
 
     }
@@ -147,8 +165,10 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (tasks.containsKey(id)) {
             System.out.println("Task " + getTask(id).getName() + " has been deleted.");
+            Task task=tasks.get(id);
             tasks.remove(id);
             historyManager.remove(id);
+            timeSortedSet.remove(task);
         }
         if (epics.containsKey(id)) {
             System.out.println("Task " + getTask(id).getName() + " has been deleted.");// при удаление эпика все его субТаски также удаляются
@@ -169,6 +189,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.removeSubTask(subTask); //новый метод
             subTasks.remove(id);
             historyManager.remove(id);
+            timeSortedSet.remove(subTask);
         }
 
     }
@@ -179,6 +200,7 @@ public class InMemoryTaskManager implements TaskManager {
         epics.clear();
         subTasks.clear();
         historyManager.removeAllTasks();
+        timeSortedSet.clear();
         System.out.println("All tasks have been deleted");
     }
 
@@ -227,23 +249,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Collection<Task> getPrioritizedTasks() {
-        TreeSet<Task> timeSortedTasks = new TreeSet<>((task1, task2) -> {
-            if (task1.getStartTime() == null) {
-                return 1;
-            }
-            if (task2.getStartTime() == null) {
-                return -1;
-            }
-            if (task1.getStartTime().isBefore(task2.getStartTime())) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
-        timeSortedTasks.addAll(getAllUsualTasks());
-        timeSortedTasks.addAll(getAllSubTasks());
-
-        return timeSortedTasks;
+        return timeSortedSet;
     }
 
     public boolean isTimeSlotAvailable(Task newTask) {
