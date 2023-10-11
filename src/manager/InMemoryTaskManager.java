@@ -16,6 +16,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected HistoryManager historyManager;
 
+
+
     Set<Task> timeSortedSet;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -44,19 +46,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addTask(Task task) {
+    public boolean addTask(Task task) {
         if (task == null) {
-            return;
+            return false;
         }
         if (task.getClass() != Task.class) {
-            return;
+            return false;
         }
         if (tasks.containsValue(task)) {
             System.out.println("You can't add " + task.getName() + " Task. The Task is added already");
-            return;
+            return false;
         }
         if (!isTimeSlotAvailable(task)) {
-            return;
+            return false;
         }
         if (task.getId() == 0) {
             task.setId(createId());
@@ -64,41 +66,43 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.put(task.getId(), task);
         timeSortedSet.add(task);
         System.out.println("Task " + task.getName() + " has been added");
+        return true;
     }
 
     @Override
-    public void addEpic(Epic epic) {
+    public boolean addEpic(Epic epic) {
         if (epic == null) {
-            return;
+            return false;
         }
         if (epic.getClass() != Epic.class) {
-            return;
+            return false;
         }
         if (epics.containsValue(epic)) {
             System.out.println("You can't add " + epic.getName() + " Epic. The Epic is added already");
-            return;
+            return false;
         }
         if (epic.getId() == 0) {
             epic.setId(createId());
         }
         epics.put(epic.getId(), epic);
         System.out.println("Epic " + epic.getName() + " has been added");
+        return true;
     }
 
     @Override
-    public void addSubTask(SubTask subTask) {
+    public boolean addSubTask(SubTask subTask) {
         if (subTask == null) {
-            return;
+            return false;
         }
         if (subTask.getClass() != SubTask.class) {
-            return;
+            return false;
         }
         if (subTasks.containsValue(subTask)) {
             System.out.println("You can't add " + subTask.getName() + " SubTask. The SubTask is added already");
-            return;
+            return false;
         }
         if (!isTimeSlotAvailable(subTask)) {
-            return;
+            return false;
         }
         Epic epic;
         if (epics.containsKey(subTask.getEpicId())) {
@@ -108,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             System.out.println("There is not Epic with id " + subTask.getEpicId());
             System.out.println("SubTask " + subTask.getName() + " has not been added");
-            return;
+            return false;
         }
         if (subTask.getId() == 0) {
             subTask.setId(createId());
@@ -117,7 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.put(subTask.getId(), subTask);
         timeSortedSet.add(subTask);
         System.out.println("SubTask " + subTask.getName() + " has been added");
-
+        return true;
     }
 
     @Override
@@ -165,7 +169,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (tasks.containsKey(id)) {
             System.out.println("Task " + getTask(id).getName() + " has been deleted.");
-            Task task=tasks.get(id);
+            Task task = tasks.get(id);
             tasks.remove(id);
             historyManager.remove(id);
             timeSortedSet.remove(task);
@@ -193,7 +197,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
     }
-
     @Override
     public void removeAllTasks() {
         tasks.clear();
@@ -283,6 +286,10 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return isAvalible;
+    }
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 
     public List<Task> getHistory() {

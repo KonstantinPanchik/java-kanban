@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.TreeSet;
 
 public interface TaskManager {
-    void addTask(Task task);
+    boolean addTask(Task task);
 
-    void addEpic(Epic epic);
+    boolean addEpic(Epic epic);
 
-    void addSubTask(SubTask subTask);
+    boolean addSubTask(SubTask subTask);
 
     List<Task> getAllUsualTasks();
 
@@ -40,5 +40,7 @@ public interface TaskManager {
     List<Task> getHistory();
 
     Collection<Task> getPrioritizedTasks();
+
+    HistoryManager getHistoryManager();
 }
 

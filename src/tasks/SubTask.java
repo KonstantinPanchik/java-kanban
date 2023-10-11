@@ -29,6 +29,7 @@ public class SubTask extends Task {
             ,int duration) {
         super(id, name, status, description,startTime,duration);
         this.epicId = epicId;
+        type = Type.SUBTASK;
     }
 
     public int getEpicId() {

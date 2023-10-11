@@ -25,21 +25,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void addTask(Task task) {
-        super.addTask(task);
+    public boolean addTask(Task task) {
+        boolean result = super.addTask(task);
         save();
+        return result;
     }
 
     @Override
-    public void addEpic(Epic epic) {
-        super.addEpic(epic);
+    public boolean addEpic(Epic epic) {
+        boolean result = super.addEpic(epic);
         save();
+        return result;
     }
 
     @Override
-    public void addSubTask(SubTask subTask) {
-        super.addSubTask(subTask);
+    public boolean addSubTask(SubTask subTask) {
+        boolean result = super.addSubTask(subTask);
         save();
+        return result;
     }
 
     @Override
@@ -136,7 +139,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    void setCreatedID() {
+    protected void setCreatedID() {
         List<Integer> findMax = new ArrayList<Integer>(tasks.keySet());
         findMax.addAll(new ArrayList<>(epics.keySet()));
         findMax.addAll(new ArrayList<>(subTasks.keySet()));
@@ -171,9 +174,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     void fillHistoryList(String last) {
+        System.out.println("Началась загрузка истории");
         for (int i : TaskBuilder.historyFromString(last)) {
-            this.historyManager.add(this.getTask(i));
+            this.getTask(i);
         }
+        System.out.println("ЗАКОНЧИЛАСЬ");
     }
 
 

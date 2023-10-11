@@ -12,4 +12,4 @@ id,type,name,status,description,epic,startDate,duration
 7,SUBTASK,Спросить даты,NEW,Узнать у HR возможные даты для отпуска,6,date is not set,0
 8,SUBTASK,Найти отель,NEW,Выбрать хороший отель на Яндекс.Путешествиях,6,date is not set,0
 
-5,8,3,2,1,6,7,898
+5,8,3,1,6,7,898,2

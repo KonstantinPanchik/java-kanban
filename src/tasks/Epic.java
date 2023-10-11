@@ -10,7 +10,7 @@ public class Epic extends Task {
 
     private List<SubTask> subTasksInEpic;
 
-    LocalDateTime endTime;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
