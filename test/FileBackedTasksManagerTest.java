@@ -20,13 +20,13 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
 
     @BeforeEach
     public void setTaskManager() {
-        file = Paths.get("saveTestDefault.csv").toFile();
+        file = Paths.get("test/TestFiles/saveTestDefault.csv").toFile();
         taskManager = new FileBackedTasksManager(file, new InMemoryHistoryManager());
     }
 
     @Test
     public void shouldSaveInTotheFile() {
-        file = Paths.get("saveTestSavingIntoFile.csv").toFile();
+        file = Paths.get("test/TestFiles/saveTestSavingIntoFile.csv").toFile();
         taskManager = new FileBackedTasksManager(file, new InMemoryHistoryManager());
 
         Task openDepositInBank = new Task("Открыть депозит в банке", "Сходить в банк и открыть счёт"
@@ -92,7 +92,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
 
     @Test
     public void shouldLoadFileWithEptyHistory() {
-        file = Paths.get("saveTestWithEmptyHistory.csv").toFile();
+        file = Paths.get("test/TestFiles/saveTestWithEmptyHistory.csv").toFile();
         taskManager = FileBackedTasksManager.loadFromFile(file);
 
         assertTrue(taskManager.getHistory().isEmpty());
@@ -100,7 +100,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
 
     @Test
     public void shouldLoadFileWithEptyFile() {
-        file = Paths.get("saveTestWithEmptyFile.csv").toFile();
+        file = Paths.get("test/TestFiles/saveTestWithEmptyFile.csv").toFile();
         taskManager = FileBackedTasksManager.loadFromFile(file);
 
         assertTrue(taskManager.getAllTasks().isEmpty());

@@ -5,6 +5,7 @@ import tasks.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -27,6 +28,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public boolean addTask(Task task) {
         boolean result = super.addTask(task);
+        setCreatedID();
         save();
         return result;
     }
@@ -34,6 +36,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public boolean addEpic(Epic epic) {
         boolean result = super.addEpic(epic);
+        setCreatedID();
         save();
         return result;
     }
@@ -41,6 +44,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public boolean addSubTask(SubTask subTask) {
         boolean result = super.addSubTask(subTask);
+        setCreatedID();
         save();
         return result;
     }
@@ -85,12 +89,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     void save() {
         try {
-            Files.createFile(file.toPath());
+            Path path=file.toPath();
+            Files.createFile(path);
             System.out.println("Новый файл " + file + " создан");
         } catch (IOException e) {
 
         }
-        try (Writer writer = new FileWriter(fileName)) {
+        try (Writer writer = new FileWriter(file)) {
             StringBuilder insideFile = new StringBuilder();
             insideFile.append("id,type,name,status,description,epic,startDate,duration\n");
             for (Integer integer : tasks.keySet()) {

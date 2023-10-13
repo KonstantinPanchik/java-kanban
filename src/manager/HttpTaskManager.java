@@ -4,6 +4,7 @@ import Client.KVTaskClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import server.EpicDeserializer;
 import server.KVServer;
 import tasks.Epic;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
@@ -24,30 +26,30 @@ public class HttpTaskManager extends FileBackedTasksManager {
     Gson gson;
 
 
-    static void fillTasksMap(Task[] arrayTasks, TaskManager manager) {
-        for (int i = 0; i < arrayTasks.length; i++) {
-            Task usualTask = arrayTasks[i];
-            manager.addTask(usualTask);
+
+     private void fillTasksMap(List<Task> list) {
+         for (Task task : list) {
+             addTask(task);
+         }
+    }
+
+    private void fillEpicsMap(List<Epic> list) {
+        for (Epic epic : list) {
+            addEpic(epic);
         }
     }
 
-    static void fillEpicsMap(Epic[] arrayEpic, TaskManager manager) {
-        for (int i = 0; i < arrayEpic.length; i++) {
-            Epic epic = arrayEpic[i];
-            manager.addEpic(epic);
+    private void fillSubtaskMap(List<SubTask> list) {
+        for (SubTask subTask : list) {
+            addSubTask(subTask);
         }
     }
 
-    static void fillSubtaskMap(SubTask[] arraySubtask, TaskManager manager) {
-        for (int i = 0; i < arraySubtask.length; i++) {
-            SubTask subTask = arraySubtask[i];
-            manager.addSubTask(subTask);
-        }
-    }
+    public HttpTaskManager(String pathToKVServer) throws IOException {
+        super(Paths.get("src/ProgrammsFiles/"+pathToKVServer.substring("http://localhost:".length(), 21) + ".csv")
+                .toFile());
 
-    public HttpTaskManager(String uri) throws IOException {
-        super(Paths.get(uri.substring("http://localhost:".length(), 21) + ".csv").toFile());
-        kvTaskClient = new KVTaskClient(uri);
+        kvTaskClient = new KVTaskClient(pathToKVServer);
         gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(Epic.class,new EpicDeserializer())
@@ -59,17 +61,17 @@ public class HttpTaskManager extends FileBackedTasksManager {
         String historyString = kvTaskClient.load("HISTORY");
 
         try {
+            TypeToken<Collection<Task>> typeToken =new TypeToken<Collection<Task>>(){};
+            List<Task> listTasks = gson.fromJson(arrayTasksJson,typeToken.getType());
+            fillTasksMap(listTasks);
 
-            Task[] arrayTasks = gson.fromJson(arrayTasksJson, Task[].class);
+            TypeToken<Collection<Epic>> typeTokenEpic =new TypeToken<Collection<Epic>>(){};
+            List<Epic> listEpics = gson.fromJson(arrayEpicsJson,typeTokenEpic.getType());
+            fillEpicsMap(listEpics);
 
-            fillTasksMap(arrayTasks, this);
-
-
-            Epic[] arrayEpic = gson.fromJson(arrayEpicsJson, Epic[].class);
-            fillEpicsMap(arrayEpic, this);
-
-            SubTask[] arraySubTask = gson.fromJson(arraySubtaskJson, SubTask[].class);
-            fillSubtaskMap(arraySubTask, this);
+            TypeToken<Collection<SubTask>> typeTokenSubtask =new TypeToken<Collection<SubTask>>(){};
+            List<SubTask> listSubtask = gson.fromJson(arrayEpicsJson,typeTokenSubtask.getType());
+            fillSubtaskMap(listSubtask);
 
             this.fillHistoryList(historyString);
 

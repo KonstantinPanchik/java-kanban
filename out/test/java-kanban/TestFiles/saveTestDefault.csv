@@ -1,0 +1,3 @@
+id,type,name,status,description,epic,startDate,duration
+1,TASK,Task1,NEW,TaskDescription, ,2020-01-01T12:00,60
+

@@ -38,7 +38,7 @@ public class HttpManagerTests extends InMemoryTaskManagerTest {
     KVServer kvServer;
     HttpTaskServer httpTaskServer;
     KVTaskClient kvTaskClient;
-
+    String PATH = "test/TestFiles/defaultDataForHttpTest.csv";
     Gson gson;
 
     @BeforeEach
@@ -58,8 +58,8 @@ public class HttpManagerTests extends InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shoudReturnTaskWithId() throws IOException{
-        File file = Paths.get("defaultDataForHttpTest.csv").toFile();
+    public void shoudReturnTaskWithId() throws IOException {
+        File file = Paths.get(PATH).toFile();
         TaskManager managerForFillingDateFromFile = FileBackedTasksManager.loadFromFile(file);
         kvTaskClient = new KVTaskClient("http://localhost:8077/");
         kvTaskClient.put("TASKS", gson.toJson(managerForFillingDateFromFile.getAllUsualTasks()));
@@ -69,16 +69,38 @@ public class HttpManagerTests extends InMemoryTaskManagerTest {
         kvTaskClient.put("HISTORY", TaskBuilder.historyToString(managerForFillingDateFromFile.getHistoryManager()));
 
 
-        taskManager=new HttpTaskManager("http://localhost:8077/");
-        Task taskLoadedfromKVServer=taskManager.getTask(898);
-        assertEquals(taskLoadedfromKVServer.getName(),"Купить роутер на яндекс маркете");
-        Task taskLoadedFromFile=managerForFillingDateFromFile.getTask(898);
-        assertEquals(taskLoadedFromFile,taskLoadedFromFile);
+        taskManager = new HttpTaskManager("http://localhost:8077/");
+        Task taskLoadedfromKVServer = taskManager.getTask(898);
+        assertEquals(taskLoadedfromKVServer.getName(), "Купить роутер на яндекс маркете");
+        Task taskLoadedFromFile = managerForFillingDateFromFile.getTask(898);
+        assertEquals(taskLoadedFromFile, taskLoadedFromFile);
+
+    }
+
+    @Test
+    public void shoudEpicWithRightAmountOfSubtask() throws IOException {
+        File file = Paths.get(PATH).toFile();
+        TaskManager managerForFillingDateFromFile = FileBackedTasksManager.loadFromFile(file);
+        kvTaskClient = new KVTaskClient("http://localhost:8077/");
+        kvTaskClient.put("TASKS", gson.toJson(managerForFillingDateFromFile.getAllUsualTasks()));
+        kvTaskClient.put("EPICS", gson.toJson(managerForFillingDateFromFile.getAllEpicTasks()));
+        kvTaskClient.put("SUBTASKS", gson.toJson(managerForFillingDateFromFile.getAllSubTasks()));
+
+        kvTaskClient.put("HISTORY", TaskBuilder.historyToString(managerForFillingDateFromFile.getHistoryManager()));
+
+
+        taskManager = new HttpTaskManager("http://localhost:8077/");
+        Epic taskLoadedfromKVServer = (Epic) taskManager.getTask(2);
+        Epic taskLoadedFromFile = (Epic) managerForFillingDateFromFile.getTask(2);
+        assertEquals(managerForFillingDateFromFile.getSubTasksOfEpic(taskLoadedFromFile)
+                , taskManager.getSubTasksOfEpic(taskLoadedfromKVServer));
+        assertEquals(taskLoadedFromFile, taskLoadedFromFile);
+
 
     }
     @Test
-    public void shoudEpicWithRightAmountOfSubtask() throws IOException{
-        File file = Paths.get("defaultDataForHttpTest.csv").toFile();
+    public void shoudReturnRigtId() throws IOException {
+        File file = Paths.get(PATH).toFile();
         TaskManager managerForFillingDateFromFile = FileBackedTasksManager.loadFromFile(file);
         kvTaskClient = new KVTaskClient("http://localhost:8077/");
         kvTaskClient.put("TASKS", gson.toJson(managerForFillingDateFromFile.getAllUsualTasks()));
@@ -88,13 +110,10 @@ public class HttpManagerTests extends InMemoryTaskManagerTest {
         kvTaskClient.put("HISTORY", TaskBuilder.historyToString(managerForFillingDateFromFile.getHistoryManager()));
 
 
-        taskManager=new HttpTaskManager("http://localhost:8077/");
-        Epic taskLoadedfromKVServer=(Epic) taskManager.getTask(2);
-        Epic taskLoadedFromFile=(Epic)managerForFillingDateFromFile.getTask(2);
-        assertEquals(managerForFillingDateFromFile.getSubTasksOfEpic(taskLoadedFromFile)
-                ,taskManager.getSubTasksOfEpic(taskLoadedfromKVServer));
-        assertEquals(taskLoadedFromFile,taskLoadedFromFile);
-
+        taskManager = new HttpTaskManager("http://localhost:8077/");
+        Task newTask=new Task("Хорошее имя для задачи","Отличное описание");
+        taskManager.addTask(newTask);
+        assertEquals(899,newTask.getId());
 
     }
 
